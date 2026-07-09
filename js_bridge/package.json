@@ -1,0 +1,26 @@
+{
+  "name": "aurora-js-bridge",
+  "version": "1.0.0",
+  "description": "Innertube JS bundling step for Aurora",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild bridge.js --bundle --outfile=dist/bridge.bundle.js --target=es2020"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base-64": "^1.0.0",
+    "core-js": "^3.49.0",
+    "event-target-shim": "^6.0.2",
+    "fast-text-encoding": "^1.0.6",
+    "node-fetch": "^3.3.2",
+    "text-encoding": "^0.7.0",
+    "whatwg-url": "^17.1.0",
+    "youtubei.js": "^17.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
+  },
+  "type": "module"
+}
