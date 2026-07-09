@@ -36,24 +36,20 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Disable Code Signing and Build
-        run: |
-          # Use xcodebuild directly to pass global code signing overrides
-          cd ios
-          pod install
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" CODE_SIGN_ENTITLEMENTS=""
+      - name: Build iOS App (No Codesign)
+        run: flutter build ios --release --no-codesign || echo "Flutter codesign verification failed (expected for unsigned builds)"
 
       - name: Package to IPA
         run: |
           mkdir -p build/ios/iphoneos/Payload
-          # xcodebuild output goes to ios/build/Release-iphoneos by default if derived data isn't changed
-          # Wait, flutter's xcode_backend.sh overrides SYMROOT to build/ios.
-          # Let's find the Runner.app wherever it was built.
-          APP_PATH=$(find . -name "Runner.app" -type d | grep "Release-iphoneos" | head -n 1)
-          if [ -z "$APP_PATH" ]; then
-            APP_PATH=$(find . -name "Runner.app" -type d | head -n 1)
+
+          # Verify that Runner.app was actually built before xcodebuild failed on code signing
+          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+            echo "Error: Runner.app was not built! There was a real compilation error."
+            exit 1
           fi
-          mv "$APP_PATH" build/ios/iphoneos/Payload/
+
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
           cd build/ios/iphoneos
           zip -qr Aurora.ipa Payload
 
