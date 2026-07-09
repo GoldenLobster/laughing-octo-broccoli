@@ -10,10 +10,6 @@ jobs:
     name: Build iOS IPA
     runs-on: macos-latest
 
-    defaults:
-      run:
-        working-directory: aurora
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,7 +30,7 @@ jobs:
           npm run build
           mkdir -p ../assets/js
           cp dist/bridge.bundle.js ../assets/js/bridge.bundle.js
-        working-directory: aurora/js_bridge
+        working-directory: js_bridge
 
       - name: Install Flutter dependencies
         run: flutter pub get
@@ -48,9 +44,9 @@ jobs:
           mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload
           cd build/ios/iphoneos
           zip -qr Aurora.ipa Payload
-          
+
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Aurora-Unsigned-IPA
-          path: aurora/build/ios/iphoneos/Aurora.ipa
+          path: build/ios/iphoneos/Aurora.ipa
