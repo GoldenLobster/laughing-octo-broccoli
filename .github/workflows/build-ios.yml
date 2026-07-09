@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -26,6 +26,7 @@ jobs:
 
       - name: Build JS Bridge
         run: |
+          rm -rf node_modules package-lock.json
           npm install
           npm run build
           mkdir -p ../assets/js
