@@ -43,13 +43,19 @@ jobs:
         run: |
           mkdir -p build/ios/iphoneos/Payload
           
-          # Verify that Runner.app was actually built before xcodebuild failed on code signing
-          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+          # Find where xcodebuild actually placed Runner.app
+          # (Flutter only copies it to build/ios/iphoneos if the build fully succeeds without code-signing errors)
+          APP_PATH=$(find build/ios -name "Runner.app" -type d | grep "Release-iphoneos" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
+          fi
+          
+          if [ -z "$APP_PATH" ]; then
             echo "Error: Runner.app was not built! There was a real compilation error."
             exit 1
           fi
           
-          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
+          mv "$APP_PATH" build/ios/iphoneos/Payload/
           cd build/ios/iphoneos
           zip -qr Aurora.ipa Payload
           
