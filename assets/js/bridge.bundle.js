@@ -69091,54 +69091,10 @@ ${getNsigProcessorFn(eval_args.n, eval_args.sp, eval_args.sig)}`;
   });
 
   // bridge.js
-  async function customFetch(input, init) {
-    let url = typeof input === "string" ? input : input.url || input.href || input.toString();
-    const requestMethod = init?.method || input?.method || "GET";
-    const requestBody = init?.body !== void 0 ? init.body : input?.body;
-    let headers = {};
-    const rawHeaders = init?.headers || input?.headers;
-    if (rawHeaders) {
-      if (rawHeaders instanceof Headers) {
-        rawHeaders.forEach((value, key) => {
-          headers[key] = value;
-        });
-      } else if (Array.isArray(rawHeaders)) {
-        rawHeaders.forEach(([key, value]) => {
-          headers[key] = value;
-        });
-      } else {
-        headers = { ...rawHeaders };
-      }
-    }
-    const optionsJson = JSON.stringify({
-      method: requestMethod,
-      headers,
-      body: requestBody ? typeof requestBody === "string" ? requestBody : requestBody.toString() : void 0
-    });
-    const responseJson = await globalThis.__hostFetch(url, optionsJson);
-    const responseData = JSON.parse(responseJson);
-    const arrayBuf = decodeB64(responseData.bodyBase64);
-    return {
-      ok: responseData.status >= 200 && responseData.status < 300,
-      status: responseData.status,
-      statusText: responseData.statusText || "",
-      headers: {
-        get: (name) => {
-          const key = Object.keys(responseData.headers || {}).find((k) => k.toLowerCase() === name.toLowerCase());
-          return key ? responseData.headers[key] : null;
-        }
-      },
-      url: responseData.url || url,
-      text: async () => new TextDecoder().decode(arrayBuf),
-      json: async () => JSON.parse(new TextDecoder().decode(arrayBuf)),
-      arrayBuffer: async () => arrayBuf
-    };
-  }
   var innertubeInstance = null;
   async function getInnertube() {
     if (!innertubeInstance) {
       innertubeInstance = await Innertube.create({
-        fetch: customFetch,
         cache: new UniversalCache(false)
       });
     }
